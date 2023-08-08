@@ -1,27 +1,44 @@
-import { ethers } from "hardhat";
+import {ethers} from 'hardhat';
+import { MultiSig__factory } from '../typechain-types';
+import { Addressable } from 'ethers';
+const hre = require('hardhat');
+const fs = require('fs');
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+async function getAddresses(){
+  let addresses = [];
+  const accounts = await ethers.getSigners()
+ 
+  
+  for (const account of accounts) {
+    addresses.push(account.address);
+  }
 
-  const lockedAmount = ethers.parseEther("0.001");
-
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
-
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+  return addresses;
+  
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
+function createFile(address: string | Addressable){
+  type config = object;
+
+  const create: config = {address: address};
+  fs.writeFileSync("../webapp/__config.json", JSON.stringify(create, null, 2));
+}
+
+async function main(){
+let addresses = await getAddresses();
+console.log(addresses);
+  const multisig= await ethers.getContractFactory("MultiSig");
+  console.log(multisig);
+  const multi = await multisig.deploy(addresses,1);
+
+  
+  console.log('Contract deployed at', multi.target);
+
+   createFile(multi.target);
+}
+
+
+main().catch((error)=>{
   console.error(error);
   process.exitCode = 1;
-});
+})

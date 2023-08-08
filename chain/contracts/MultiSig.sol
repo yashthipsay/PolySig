@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.17;
+
+
 
 contract MultiSig{
     event Deposit(address indexed sender, uint amount);
@@ -18,6 +20,7 @@ contract MultiSig{
     address[] public owners;
     mapping(address => bool) public isOwner;
     uint public required;
+    uint transactionCount;
 
     Transaction[] public transactions;
     mapping(uint => mapping(address=>bool)) public approved;
@@ -46,8 +49,8 @@ contract MultiSig{
         require(_owners.length > 0, "owners required");
         require(_required >0 && required <= owners.length, "invalid required number of owners");
 
-        for(uint i; i<_owners.length; i++){
-            address owner = owners[i];
+        for(uint i = 0; i<_owners.length; i++){
+            address owner = _owners[i];
 
             require(owner != address(0), "invalid owner");
             require(!isOwner[owner], "owner is not unique");
@@ -63,7 +66,7 @@ contract MultiSig{
         emit Deposit(msg.sender, msg.value);
     }
 
-    function submit(address _to, uint _value, bytes calldata _data) external onlyOwner{
+    function submit(address _to, uint _value, bytes memory _data) external onlyOwner{
         transactions.push(Transaction({
             to: _to, 
             value: _value,
@@ -87,7 +90,7 @@ contract MultiSig{
         
     }
 
-    function execute(uint _txId) external txExists(_txId) not Executed(_txId){
+    function execute(uint _txId) external txExists(_txId) notExecuted(_txId){
         require(_getApprovalCount(_txId) >= required, "approvals < required");
         Transaction storage transaction = transactions[_txId];
         transaction.executed = true;
@@ -98,5 +101,35 @@ contract MultiSig{
 
         emit Execute(_txId);
 
+    }
+
+    function getTransactionIds(bool pending, bool executed) public view returns(uint[] memory){
+        uint count = getTransactionCount(pending, executed);
+        uint[] memory txIds = new uint[](count);
+        uint runningCount = 0;
+        for(uint i=0; i<transactionCount; i++){
+            if(
+                (pending && !transactions[i].executed) || (executed && transactions[i].executed)
+            ) {
+                txIds[runningCount] = i;
+                runningCount++;
+            }
+        }
+        return txIds;
+    }
+
+    function getTransactionCount(
+        bool pending,
+        bool executed
+    ) public view returns (uint){
+        uint count=0;
+        for(uint i=0;i<transactionCount;i++){
+            if(
+                (pending && !transactions[i].executed) || (executed && transactions[i].executed)
+            ) {
+                count++;
+            }
+        }
+        return count;
     }
 }
