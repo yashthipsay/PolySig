@@ -1,6 +1,6 @@
 "use client"
 import Image from 'next/image'
-import MultiSig from '../../chain/artifacts/contracts/MultiSig.sol/MultiSig.json';
+import MultiSig from '../../chain/artifacts/contracts/MultiSigTwo.sol/MultiSigTwo.json';
 import {ethers} from 'ethers';
 import {address} from '../__config.json';
 import setupEvents from '../components/SetupEvents';
@@ -17,7 +17,7 @@ export default function Home() {
     const contract = new ethers.Contract(address, MultiSig.abi, signer);
     const destination = document.getElementById("destination").value;
     const wei = document.getElementById("wei").value;
-    await contract.submit(destination, wei, "0x");
+    await contract.submitTransaction(destination, wei, "0x");
   }
   
 
