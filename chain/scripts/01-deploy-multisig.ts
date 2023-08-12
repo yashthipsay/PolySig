@@ -1,8 +1,7 @@
-// import {ethers} from 'hardhat';
-import * as hre from 'hardhat';
+import {ethers} from 'hardhat';
 import { MultiSigTwo__factory } from '../typechain-types';
 import { Addressable } from 'ethers';
-const ethers = hre.ethers;
+const hre = require('hardhat');
 const fs = require('fs');
 
 async function getAddresses(){

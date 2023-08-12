@@ -1,9 +1,7 @@
-// import {ethers} from 'hardhat';
-import * as hre from 'hardhat';
+import {ethers} from 'hardhat';
 import {Addressable} from 'ethers';
 import { MultiSigTwo } from '../typechain-types';
 const fs = require('fs');
-const ethers = hre.ethers;
 
 async function main(){
     const sender = await ethers.getContractFactory("Sender");
