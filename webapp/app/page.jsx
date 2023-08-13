@@ -5,6 +5,7 @@ import Sender from '../../chain/artifacts/contracts/Sender.sol/Sender.json';
 import {ethers} from 'ethers';
 import {address} from '../__config.json';
 import setupEvents from '../components/SetupEvents';
+import EthOverview from '@/components/Eth-Overview'
 
 function sendCcip(){
   document.getElementById('ccip').innerHTML = 'A Cross Chain Message was just sent with chainlink.'
@@ -81,6 +82,9 @@ export default function Home() {
          
       </div>
     </div>
+
+
+    <EthOverview/>
 
     </div>
   )
