@@ -4,6 +4,7 @@ import MultiSig from '../../chain/artifacts/contracts/MultiSig.sol/MultiSig.json
 import {ethers} from 'ethers';
 import {address} from '../__config.json';
 import setupEvents from '../components/SetupEvents';
+import EthOverview from '@/components/Eth-Overview'
 
 export default function Home() {
 
@@ -72,6 +73,8 @@ export default function Home() {
          
       </div>
     </div>
+
+    <EthOverview/>
     </div>
   )
 }
